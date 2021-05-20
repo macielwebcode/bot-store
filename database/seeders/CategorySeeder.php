@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -16,19 +17,25 @@ class CategorySeeder extends Seeder
     {
         DB::table('categories')->insert([
             [
-                'title' => 'Backoffice e TI',
-                'description' => 'Lorem ipsum toder clareted keep the history',
-                'layout_active' => true
+                'id'            => 1,
+                'title'         => 'Backoffice e TI',
+                'description'   => 'Lorem ipsum toder clareted keep the history',
+                'layout_active' => true,
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
-                'title' => 'Contas a Pagar',
-                'description' => 'Lorem ipsum toder clareted keep the history',
-                'layout_active' => true
+                'id'            => 2,
+                'title'         => 'Contas a Pagar',
+                'description'   => 'Lorem ipsum toder clareted keep the history',
+                'layout_active' => true,
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
-                'title' => 'Juridico',
-                'description' => 'Lorem ipsum toder clareted keep the history',
-                'layout_active' => true
+                'id'            => 3,
+                'title'         => 'Juridico',
+                'description'   => 'Lorem ipsum toder clareted keep the history',
+                'layout_active' => true,
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
             ],
         ]);
     }

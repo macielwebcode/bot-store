@@ -16,15 +16,15 @@ class FavoriteSeeder extends Seeder
     {
         DB::table('favorites')->insert([
             [
-                'user_id' => 1,
+                'user_id' => 3054,
                 'product_id' => 1
             ],
             [
-                'user_id' => 1,
+                'user_id' => 3054,
                 'product_id' => 2
             ],
             [
-                'user_id' => 1,
+                'user_id' => 3013,
                 'product_id' => 3
             ],
         ]);

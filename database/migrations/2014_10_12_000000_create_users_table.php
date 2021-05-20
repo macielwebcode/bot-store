@@ -20,13 +20,13 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
-            $table->string('cpf', 15);
-            $table->string('cnpj', 18);
             $table->decimal('balance');
-            $table->string('token_key', 255);
-            $table->string('token_pass', 255);
             $table->string('status', 50);
-            $table->string('profile_pic', 100);
+            $table->string('cpf', 15);
+            $table->string('cnpj', 18)->nullable();
+            $table->string('token_key', 255)->nullable();
+            $table->string('token_pass', 255)->nullable();
+            $table->string('profile_pic', 100)->nullable();
 
             $table->rememberToken();
             $table->timestamps();

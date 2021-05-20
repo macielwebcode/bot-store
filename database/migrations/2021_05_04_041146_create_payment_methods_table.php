@@ -16,6 +16,7 @@ class CreatePaymentMethodsTable extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string("title");
+            $table->string("description", 300);
             $table->string("settings", 300);
             $table->boolean("active");
             $table->decimal("tax_percent");

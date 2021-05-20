@@ -17,7 +17,7 @@ class CreatePlansTable extends Migration
             $table->id();
             $table->string("title", 50);
             $table->string("description", 200);
-            $table->enum("charge_period", array(1, 30, 60, 90, 365));
+            $table->enum("charge_period", array('1', '30', '60', '90', '365'));
             $table->decimal("value");
             $table->integer("max_usage");
             $table->integer("max_bots");

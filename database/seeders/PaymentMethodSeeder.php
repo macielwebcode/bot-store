@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,7 @@ class PaymentMethodSeeder extends Seeder
                 'active' => true,
                 'tax_percent' => 0,
                 'tax_amount' => 1.50,
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
             ],
         ]);
     }

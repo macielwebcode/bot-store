@@ -22,8 +22,8 @@ class CreateProductsTable extends Migration
             $table->integer("scale_quantity");
             $table->boolean("layout_active");
             // $table->string("token_test", 200);  // decidir se vai ter próprio token
-            $table->json("payload_structure");
-            $table->json("payload_sample");
+            $table->json("payload_structure")->nullable();
+            $table->json("payload_sample")->nullable();
 
             $table->timestamps();
 
