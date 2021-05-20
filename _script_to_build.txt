@@ -1,0 +1,18 @@
+_____________________________________________
+-- Comandos para iniciar projeto
+
+-- Uteis para Laravel
+composer create-project --prefer-dist laravel/laravel <nome-projeto>
+cd <nome-projeto>
+composer require laravel/ui
+php artisan ui vue --auth
+
+-- Uteis para Vue
+npm install
+npm run dev
+
+_____________________________________________
+-- Comandos para executar projeto
+
+php artisan serve
+

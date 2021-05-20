@@ -1,0 +1,10 @@
+_____________________________________________
+-- Comandos para criar models
+
+php artisan make:model -a Product
+php artisan make:model -a Category
+php artisan make:model -a Plan
+php artisan make:model -a Invoice
+php artisan make:model -a Notification
+php artisan make:model -a Favorite
+php artisan make:model -a PaymentMethod
