@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string("name", 100);
             $table->string("description", 200);
+            $table->string("image", 200);
             $table->decimal("value");
             $table->decimal("simulated_value");
             $table->integer("scale_quantity");

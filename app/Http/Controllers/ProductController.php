@@ -17,6 +17,13 @@ class ProductController extends Controller
         return response()->json(Product::all()->jsonSerialize());
     }
 
+    public function search(Request $request)
+    {
+        $filters = [];
+        $response = "";
+        return response()->json(Product::all()->jsonSerialize());
+    }
+
     /**
      * Show the form for creating a new resource.
      *

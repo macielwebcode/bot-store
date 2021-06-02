@@ -14,7 +14,16 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Invoice::all()->jsonSerialize());
+    }
+    /**
+     * Display a search of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        // if($request->get(""))
     }
 
     /**
@@ -24,7 +33,8 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        //
+        $invoice = new Invoice();
+        return response($invoice->jsonSerialize(), Response::HTTP_CREATED);
     }
 
     /**
