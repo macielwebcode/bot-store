@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProductController;
@@ -17,23 +18,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post("/login", [AuthController::class, "login"]);
+Route::post("/register", [AuthController::class, "register"]);
+
+// Auth is mandatory
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('user', [AuthController::class, "user"]);
+    Route::post('logout', [AuthController::class, "logout"]);
+    
+    Route::resource('invoices', 'InvoiceController', [
+        'except' => ['edit', 'show', 'store', 'index']
+    ]);
+    
+    Route::resource('/products', 'ProductController', [
+        'except' => ['edit', 'show', 'store', 'create', 'update', 'destroy']
+    ]);
 });
 
-// Invoice
-Route::resource('/invoices', 'InvoiceController', [
-    'except' => ['edit', 'show', 'store', 'index']
-]);
 
+// Auth is not mandatory
 // Category
 Route::get('/categories', [CategoryController::class,'index']);
 
 // Product
-Route::resource('/products', 'InvoiceController', [
-    'except' => ['edit', 'show', 'store', 'create', 'update', 'destroy']
-]);
-
 Route::get('/products', [ProductController::class,'index']);
 
 // Plan
