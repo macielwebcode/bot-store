@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\apiResponser;
 use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
+    
+    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,10 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        return response()->json(Invoice::all()->jsonSerialize());
+        $user = User::find(Auth::user()->id);
+        $invoices = $user->invoices->toArray();
+
+        return $this->success($invoices);
     }
     /**
      * Display a search of the resource.

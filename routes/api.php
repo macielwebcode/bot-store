@@ -23,14 +23,13 @@ Route::post("/register", [AuthController::class, "register"]);
 
 // Auth is mandatory
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::get('user', [AuthController::class, "user"]);
     Route::post('logout', [AuthController::class, "logout"]);
-    
-    Route::resource('invoices', 'InvoiceController', [
-        'except' => ['edit', 'show', 'store', 'index']
+
+    Route::resource('invoices', InvoiceController::class, [
+        'except' => ['edit', 'show', 'create']
     ]);
-    
+
     Route::resource('/products', 'ProductController', [
         'except' => ['edit', 'show', 'store', 'create', 'update', 'destroy']
     ]);
