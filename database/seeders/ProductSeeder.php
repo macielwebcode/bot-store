@@ -24,7 +24,8 @@ class ProductSeeder extends Seeder
                 'scale_quantity' => 1,
                 'layout_active' => true,
                 'category_id' => 1,
-                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'image' => ''
             ],
             [
                 'name' => 'Atualização de localização de veículo',
@@ -34,7 +35,8 @@ class ProductSeeder extends Seeder
                 'scale_quantity' => 1,
                 'layout_active' => true,
                 'category_id' => 3,
-                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'image' => ''
             ],
             [
                 'name' => 'Cria maquina virtual DigitalOcean',
@@ -44,7 +46,8 @@ class ProductSeeder extends Seeder
                 'scale_quantity' => 1,
                 'layout_active' => true,
                 'category_id' => 2,
-                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'image' => ''
             ],
             [
                 'name' => 'Cria maquina virtual Linux',
@@ -54,7 +57,8 @@ class ProductSeeder extends Seeder
                 'scale_quantity' => 1,
                 'layout_active' => true,
                 'category_id' => 3,
-                'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at'    => Carbon::now()->format('Y-m-d H:i:s'),
+                'image' => ''
             ],
         ]);
     }

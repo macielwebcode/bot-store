@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\apiResponser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
+    use apiResponser;
 
     public function register(Request $request){
         $user = User::create([
@@ -23,15 +25,13 @@ class AuthController extends Controller
 
         ]);
         
-        return $user;
+        return $this->success([$user]);
     }
 
 
     public function login(Request $request){
         if(!Auth::attempt($request->only(['email', 'password']))) {
-            return response([
-                'message' => "Credenciais inválidas"
-            ], Response::HTTP_UNAUTHORIZED);
+            return $this->error("Credenciais inválidas", Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
@@ -39,10 +39,7 @@ class AuthController extends Controller
         $token = $user->createToken('token')->plainTextToken;
         $cookie = cookie("jwt", $token, 60 * 24); //1 dia
 
-        return response([
-            'message' => 'Sucesso',
-            // "token" => $token
-        ])->withCookie($cookie);
+        return $this->success([], 'Sucesso')->withCookie($cookie);
     }
 
     public function user() {
@@ -51,8 +48,6 @@ class AuthController extends Controller
 
     public function logout(Request $request){
         $cookie = Cookie::forget("jwt");
-        return response([
-            'message' => "Sucesso",
-        ])->withCookie($cookie);
+        return $this->success([], "Sucesso")->withCookie($cookie);
     }
 }

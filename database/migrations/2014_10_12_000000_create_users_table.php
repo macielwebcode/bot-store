@@ -28,6 +28,17 @@ class CreateUsersTable extends Migration
             $table->string('token_pass', 255)->nullable();
             $table->string('profile_pic', 100)->nullable();
 
+            // Address
+            $table->string('street', 200)->nullable();
+            $table->string('district', 100)->nullable();
+            $table->string('complement', 100)->nullable();
+            $table->string('number', 10)->nullable();
+            $table->string('city', 100)->nullable();
+            $table->string('state', 20)->nullable();
+            $table->string('cep', 10)->nullable();
+            $table->string('country', 2)->nullable();
+            
+
             $table->rememberToken();
             $table->timestamps();
         });

@@ -44,6 +44,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function invoices(){
+        return $this->hasMany(Invoice::class);
+    }
+
     public function favoriteProducts(){
         return $this->belongsToMany(Product::class, 'favorites')->as('favorite');
     }
