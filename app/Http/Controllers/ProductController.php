@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\apiResponser;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
+    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -88,5 +93,45 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+    }
+
+    public function favorites(){
+        $favs = $data = [];
+        if($user = Auth::user()){
+            $favs = User::find($user->id)->favoriteProducts;
+
+            foreach($favs as $fav) {
+                $data[] = $fav->toArray();
+            }
+        }
+
+        return $this->success($data);
+    }
+
+    public function setFavorite(Request $request){
+        if($user = Auth::user()){
+
+            $product = Product::find($request->input('product_id'));
+
+            if(empty($product))
+                return $this->error("Produto não encontrado", Response::HTTP_NOT_FOUND);
+            
+            $is_inserted = false;
+            $favs = [];
+            foreach($user->favoriteProducts as $fav){
+                if($fav->id != $product->id)
+                    $favs[] = $fav->id;
+                else
+                    $is_inserted = true;
+            }
+
+            if(!$is_inserted)
+                $favs[] = $product->id;
+
+            $user->favoriteProducts()->sync($favs);
+            $user->save();
+
+            return $this->success($product);
+        }
     }
 }

@@ -34,6 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/products', 'ProductController', [
         'except' => ['edit', 'show', 'store', 'create', 'update', 'destroy']
     ]);
+
+    Route::get("/products/favorites", [ProductController::class, 'favorites']);
+    Route::post("/products/favorite", [ProductController::class, 'setFavorite']);
+
 });
 
 
