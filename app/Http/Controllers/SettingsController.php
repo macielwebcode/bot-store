@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
-use App\Models\Invoice;
-use App\Models\User;
+use App\Models\Settings;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class InvoiceController extends Controller
+class SettingsController extends Controller
 {
-    
-    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -19,19 +14,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $user = User::find(Auth::user()->id);
-        $invoices = $user->invoices->toArray();
-
-        return $this->success($invoices);
-    }
-    /**
-     * Display a search of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search(Request $request)
-    {
-        // if($request->get(""))
+        //
     }
 
     /**
@@ -41,8 +24,7 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $invoice = new Invoice();
-        return response($invoice->jsonSerialize(), Response::HTTP_CREATED);
+        //
     }
 
     /**
@@ -59,10 +41,10 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\Settings  $settings
      * @return \Illuminate\Http\Response
      */
-    public function show(Invoice $invoice)
+    public function show(Settings $settings)
     {
         //
     }
@@ -70,10 +52,10 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\Settings  $settings
      * @return \Illuminate\Http\Response
      */
-    public function edit(Invoice $invoice)
+    public function edit(Settings $settings)
     {
         //
     }
@@ -82,10 +64,10 @@ class InvoiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\Settings  $settings
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, Settings $settings)
     {
         //
     }
@@ -93,10 +75,10 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\Settings  $settings
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(Settings $settings)
     {
         //
     }

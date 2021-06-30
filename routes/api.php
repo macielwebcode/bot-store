@@ -4,7 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\PagarMe\PlansController;
+use App\Http\Controllers\Receiver\PagarmeController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,15 +21,40 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post("/login", [AuthController::class, "login"]);
-Route::post("/register", [AuthController::class, "register"]);
+Route::post("login", [AuthController::class, "login"]);
+Route::post("register", [AuthController::class, "register"]);
+
+
+Route::prefix("admin")->group(function() {
+    Route::resource("plans", \App\Http\Controllers\Admin\PlanController::class);
+});
+
+Route::resource("receiver/pagarme", PagarmeController::class);
+
+// Paypal Control access
+// Route::prefix("paypal")->group(function() {
+//     Route::resource("products", ProductsController::class);
+//     Route::resource("plans", PlansController::class);
+//     Route::resource("billings", BillingController::class);
+// });
+
+// Pagarme Control access
+Route::prefix("pagarme")->group(function() {
+    Route::resource("plans", PlansController::class);
+    // Route::resource("products", ProductsController::class);
+    // Route::resource("billings", BillingController::class);
+});
 
 // Auth is mandatory
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [AuthController::class, "user"]);
     Route::post('logout', [AuthController::class, "logout"]);
 
-    Route::resource('invoices', InvoiceController::class, [
+    Route::resource('subscriptions', SubscriptionController::class, [
+        'except' => ['edit', 'show', 'create']
+    ]);
+
+    Route::resource('transactions', TransactionController::class, [
         'except' => ['edit', 'show', 'create']
     ]);
 
@@ -37,6 +65,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get("/products/favorites", [ProductController::class, 'favorites']);
     Route::post("/products/favorite", [ProductController::class, 'setFavorite']);
 
+    Route::get("/products/actives", [ProductController::class, 'actives']);
+    Route::post("/products/active", [ProductController::class, 'setActive']);
+
+    // Route::
 });
 
 

@@ -44,11 +44,50 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function invoices(){
-        return $this->hasMany(Invoice::class);
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class);
     }
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function extracts(){
+        return $this->hasMany(Extract::class);
+    }
+
+    // public function plan() {
+    //     return $this->invoices()->where("status", "paid");
+    //     Plan::class, Invoice::class);
+    // }
 
     public function favoriteProducts(){
         return $this->belongsToMany(Product::class, 'favorites')->as('favorite');
     }
+    
+    public function activeProducts(){
+        return $this->belongsToMany(Product::class, 'active_products')->as('active');
+    }
+
+    public function usercards(){
+        return $this->hasMany(UserCard::class);
+    }
+
+    public function balance(){
+        $last_balance = 0;
+        $last_balance = collect($this->extracts())->last(null, json_decode(json_encode([ 'balance' => 0]), 1))->balance;
+
+        return $last_balance;
+    }
+
+    // public function balance($amount, $operation = null, $description = ""){
+    //     $allowed_operations = array( "C", "D" );
+
+    //     $ret = false;
+    //     $balance = $this->balance();
+
+    //     if($amount > 0 && collect($allowed_operations)->has($operation)) {
+
+    //     }
+    // }
 }

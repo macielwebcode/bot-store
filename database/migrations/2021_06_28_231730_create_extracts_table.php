@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInvoicesTable extends Migration
+class CreateExtractsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateInvoicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('extracts', function (Blueprint $table) {
             $table->id();
-            $table->decimal("amount");
-            $table->string("status", 30);
-
+            $table->decimal("balance");
+            $table->decimal("old_balance");
+            $table->enum('operation', [ 'C', 'D' ]);
+            $table->string("description", 100);
             $table->timestamps();
 
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('plan_id')->constrained();
+
         });
     }
 
@@ -32,11 +33,9 @@ class CreateInvoicesTable extends Migration
      */
     public function down()
     {
-        Schema::table("invoices", function(Blueprint $table) {
+        Schema::table("extracts", function(Blueprint $table) {
             $table->dropForeign(['user_id']);
-            $table->dropForeign(['plan_id']);
         });
-
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('extracts');
     }
 }

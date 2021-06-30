@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'maciel@gmail.com',
                 'password' => Hash::make('123456'),
                 'cpf' => '596.772.910-09',
+                'phone' => '18998109428',
                 'balance' => 0,
                 'status' => 1,
 
@@ -40,6 +41,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'vini.vptds@gmail.com',
                 'password' => Hash::make('11223344'),
                 'cpf' => '417.105.558-07',
+                'phone' => '18998109428',
                 'balance' => 0,
                 'status' => 1,
 
@@ -59,7 +61,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(ProductSeeder::class);
         $this->call(PlanSeeder::class);
-        $this->call(InvoiceSeeder::class);
+        $this->call(SubscriptionSeeder::class);
         $this->call(NotificationSeeder::class);
         $this->call(FavoriteSeeder::class);
         $this->call(SettingsSeeder::class);

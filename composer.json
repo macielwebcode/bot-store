@@ -8,10 +8,11 @@
         "php": "^7.3|^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.3",
         "laravel/framework": "^8.12",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "pagarme/pagarme-php": "^4.1",
         "srmklive/paypal": "~3.0"
     },
     "require-dev": {
