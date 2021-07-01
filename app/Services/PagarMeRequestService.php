@@ -10,6 +10,7 @@ class PagarmeRequestService extends BaseRequestService
     protected $gateway;
     protected $postback_url;
 
+    private $phones;
     private $address;
     private $billing;
     private $shipping;
@@ -34,6 +35,26 @@ class PagarmeRequestService extends BaseRequestService
         ];
 
         return $this->gateway;
+    }
+
+    public function setFullAddress($street, $street_number, $neighborhood, $zipcode, $country, $state, $city, $complementary = "")
+    {
+        $this->address = [
+            'street' => $street,
+            'street_number' => $street_number,
+            'zipcode' => $zipcode,
+            'country' => $country,
+            'state' => $state,
+            'city' => $city,
+            'neighborhood' => $neighborhood,
+            'complementary' => $complementary,
+        ];
+
+        return $this->gateway;
+    }
+
+    public function setPhones(array $phones){
+        $this->phones = $phones;
     }
 
     public function setBilling($name)
@@ -107,7 +128,7 @@ class PagarmeRequestService extends BaseRequestService
 
     public function getCustomer($id)
     {
-        return $this->get(sprintf('%s/%s', 'customers', $id));
+        return $this->gateway->customers()->get([ "id" => $id]);
     }
 
     public function createCustomer($name, $email, $external_id, array $phone_numbers, array $documents, $type = 'individual', $country = 'br')
@@ -123,12 +144,6 @@ class PagarmeRequestService extends BaseRequestService
         ];
 
         $result = $this->gateway->customers()->create($data);
-
-        if(!isset($result['errors'])){
-            $user = User::find($external_id);
-            $user->pagarme_id = $result['id'];
-            $user->save();
-        }
 
         return $result;
     }
@@ -154,6 +169,16 @@ class PagarmeRequestService extends BaseRequestService
 
     public function createSubscription(array $customer, $plan_id, $payment_method, $card_id = null)
     {
+        if(!empty($this->address)){
+            $customer['address'] = $this->address;
+        }
+        if(!empty($this->phones)){
+            $customer['phone'] = $this->phones;
+        }
+
+        // Corrects PagarMe bug that gets a lot of documents
+        $customer['documents'] = [collect($customer['documents'])->first()];
+
         $data = [
             'customer' => $customer,
             'plan_id' => $plan_id,
@@ -202,5 +227,15 @@ class PagarmeRequestService extends BaseRequestService
     public function getBalance()
     {
         return $this->get('balance');
+    }
+
+    public function pagarmeToDate($string = "") {
+        
+    }
+
+    public function dataToPagarme($string = "") {
+        $data = strtotime($string);
+        $result = date("m", $data) . substr(date("Y", $data), -2);
+        return $result;
     }
 }
