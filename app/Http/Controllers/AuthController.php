@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -18,30 +19,62 @@ class AuthController extends Controller
 
     public function register(Request $request){
         
-        // Waits success for commit
-        DB::beginTransaction();
-        
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'cpf' => $request->input('cpf'),
-            'phone' => $request->input('phone'),
-            'password' => Hash::make($request->input('password')),
-            'status' => 1,
-            'balance' => 0,
-
+        $validator = Validator::make($request->all(), [
+            "name"              => 'required|string',
+            "email"             => 'required|string',
+            "cpf"               => 'required|string|max:11',
+            "phone"             => 'required|string',
+            "password"          => 'required|string',
+        ], [
+            'name' => "nome",
+            'phone' => "celular",
+            'password' => "senha",
         ]);
 
-        $operation = new PagarmeRequestService;
-        $operation->createCustomer($user->name, $user->email, $user->id, [$user->phone], [$user->cpf]);
+        if($validator->fails()){
+            return $this->error($validator->getMessageBag()->first(), 500);
+        } else {
 
-        if(!$operation){
-            DB::rollBack();
-            return $this->error("Falha ao resgistrar usuário", 500);
+            // Waits success for commit
+            DB::beginTransaction();
+            
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'cpf' => $request->input('cpf'),
+                'phone' => substr($request->input('phone'), 0, 11),
+                'password' => Hash::make($request->input('password')),
+                'status' => 1,
+                'balance' => 0,
+
+            ]);
+
+            $operation = new PagarmeRequestService;
+            $result_customer = $operation->createCustomer(
+                $user->name,
+                $user->email,
+                $user->id,
+                [ $user->phone ],
+                [
+                    (object)[
+                        'type'   => 'cpf',
+                        'number' => $user->cpf
+                    ],
+                ]
+            );
+
+            if(isset($result_customer->errors)){
+                DB::rollBack();
+                return $this->error("Falha ao resgistrar usuário", 500);
+            }
+
+            $user->pagarme_id = $result_customer->id;
+            $user->save();
+
+            DB::commit();
+
+            return $this->success([$user]);
         }
-
-        DB::commit();
-        return $this->success([$user]);
     }
 
 
