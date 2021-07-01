@@ -15,7 +15,6 @@ class CreateSubscriptionsTable extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->decimal("amount");
             $table->integer("pagarme_id")->nullable();
             $table->string("status");
 

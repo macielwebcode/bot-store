@@ -9,6 +9,14 @@ class UserCard extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'card_id',
+        "brand",
+        "last_digits",
+        "holder_name"
+    ];
+
+
     public function user(){
         return $this->belongsTo(User::class);
     }

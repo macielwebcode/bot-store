@@ -25,7 +25,7 @@ class CreateTransactionsTable extends Migration
             $table->integer('refunded_amount')->nullable();
             $table->integer('installments')->nullable();
             $table->integer('cost')->nullable();
-            $table->integer('subscription_code')->nullable();
+            $table->integer('subscription_id')->nullable();
             $table->string('postback_url')->nullable();
             $table->string('card_holder_name')->nullable();
             $table->string('card_last_digits')->nullable();
