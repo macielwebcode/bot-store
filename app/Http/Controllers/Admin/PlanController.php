@@ -80,4 +80,55 @@ class PlanController extends Controller
             return $this->success($plan);
         }
     }
+
+    public function show(Plan $plan){
+        return $plan 
+        ? $this->success($plan, __("Retornando plano")) 
+        : $this->error(__("Plano não encontrado"), 404);
+    }
+
+    
+    public function update(Request $request, Plan $plan){
+        
+        $data = [];
+        
+        if(!empty($request->all()))
+        $data = $request->all();
+        
+        $validator = Validator::make($data, [
+            'title'         => 'string',
+            'description'   => 'string',
+            'charge_period' => 'in:1,30,60,90,365',
+            'value'         => 'decimal',
+            'max_usage'     => 'integer',
+            'max_bots'      => 'integer',
+            'balance_saving'=> 'boolean',
+        ]);
+        
+        extract($data);
+        
+        if($validator->fails()){
+            return $this->error(__("Campos inválidos"), 500);
+        }
+        
+        $plan->title = !empty($title) ? $title : $plan->title;
+        $plan->description = !empty($description) ? $description : $plan->description;
+        $plan->charge_period = !empty($charge_period) ? $charge_period : $plan->charge_period;
+        $plan->value = !empty($value) ? $value : $plan->value;
+        $plan->max_usage = !empty($max_usage) ? $max_usage : $plan->max_usage;
+        $plan->max_bots = !empty($max_bots) ? $max_bots : $plan->max_bots;
+        $plan->balance_saving = !empty($balance_saving) ? $balance_saving : $plan->balance_saving;
+        
+        
+        Log::info("Editando plano [ {$plan->id} ]...");
+        Log::info(json_encode($data));
+        
+        $plan->save();
+        
+        return $this->success($plan, __("Plano editado"));
+    }
+
+    public function toggleActive(Plan $plan){
+
+    }
 }

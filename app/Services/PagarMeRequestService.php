@@ -19,7 +19,7 @@ class PagarmeRequestService extends BaseRequestService
     public function __construct()
     {
         $this->gateway = new \PagarMe\Client(env("PAGARME_KEY", 'x'));
-        $this->postback_url = env("APP_POSTBACK_URL", env("APP_URL", "example.com"));
+        $this->postback_url = env("PAGARME_POSTBACK_URL", env("API_URL", "example.com"));
     }
 
     // Customer related

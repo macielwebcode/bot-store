@@ -27,10 +27,10 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = User::with("subscriptions")->find(Auth::user()->id);
         $subscriptions = $user->subscriptions->toArray();
 
-        return $this->success($subscriptions);
+        return $this->success($subscriptions, __("Retornando assinatura"));
     }
     /**
      * Display a search of the resource.
@@ -74,7 +74,7 @@ class SubscriptionController extends Controller
             $user_id = Auth::user()->id;
             $user = User::find($user_id);
 
-            if(!empty($user->subscriptions())){
+            if(!empty($user->subscriptions()->count())){
                 return $this->error("Cliente já possui assinatura ativa", 403);
             }
 

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\apiResponser;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
+    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -14,17 +18,30 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        //
+
+        $user = User::with("notifications")->find(Auth::user()->id)->toArray();
+
+        $data = $user['notifications'];
+
+        return $this->success($data, __("Retornando notificações do cliente"));
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function unread()
+    { 
+        $user = User::with("notifications")->find(Auth::user()->id);
+
+        $notifications = $user->notifications()->where("is_read", false)->get();
+
+        return $this->success($notifications, __("Retornando notificações do cliente"));
+    }
+
+    public function setRead(Request $request, Notification $notification)
     {
-        //
+        $notification->is_read = true;
+        $notification->save();
+
+        return $this->success($notification, __("Marcando notificação como lida"));
     }
 
     /**
@@ -50,17 +67,6 @@ class NotificationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Notification  $notification
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Notification $notification)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -69,7 +75,7 @@ class NotificationController extends Controller
      */
     public function update(Request $request, Notification $notification)
     {
-        //
+        
     }
 
     /**

@@ -11,14 +11,16 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
     use apiResponser;
 
-    public function register(Request $request){
-        
+    public function register(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
             "name"              => 'required|string',
             "email"             => 'required|string',
@@ -31,13 +33,13 @@ class AuthController extends Controller
             'password' => "senha",
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->error($validator->getMessageBag()->first(), 500);
         } else {
 
             // Waits success for commit
             DB::beginTransaction();
-            
+
             $user = User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
@@ -54,7 +56,7 @@ class AuthController extends Controller
                 $user->name,
                 $user->email,
                 $user->id,
-                [ $user->phone ],
+                [$user->phone],
                 [
                     (object)[
                         'type'   => 'cpf',
@@ -63,9 +65,9 @@ class AuthController extends Controller
                 ]
             );
 
-            if(isset($result_customer->errors)){
+            if (isset($result_customer->errors)) {
                 DB::rollBack();
-                return $this->error("Falha ao resgistrar usuário", 500);
+                return $this->error(__("Falha ao resgistrar usuário"), 500);
             }
 
             $user->pagarme_id = $result_customer->id;
@@ -73,14 +75,15 @@ class AuthController extends Controller
 
             DB::commit();
 
-            return $this->success([$user]);
+            return $this->success($user, __("Retornando usuário"));
         }
     }
 
 
-    public function login(Request $request){
-        if(!Auth::attempt($request->only(['email', 'password']))) {
-            return $this->error("Credenciais inválidas", Response::HTTP_UNAUTHORIZED);
+    public function login(Request $request)
+    {
+        if (!Auth::attempt($request->only(['email', 'password']))) {
+            return $this->error(__("Credenciais inválidas"), Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
@@ -88,15 +91,68 @@ class AuthController extends Controller
         $token = $user->createToken('token')->plainTextToken;
         $cookie = cookie("jwt", $token, 60 * 24); //1 dia
 
-        return $this->success([], 'Sucesso')->withCookie($cookie);
+        return $this->success($user, __('Sucesso'))->withCookie($cookie);
     }
 
-    public function user() {
-        return Auth::user();
+    public function user()
+    {
+        return $this->success(Auth::user(), __("Retornando usuário"));
     }
 
-    public function logout(Request $request){
+    public function forgot(Request $request)
+    {
+        if(Auth::user()) {
+            return $this->error(__("Faça logout antes de realizar essa operação"), 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->error(__("Campos inválidos"), 500);
+        }
+
+        $email = $request->input("email");
+
+        $user = User::where("email", $email)->first();
+        if (!$user) {
+            return $this->error(__("Usuário não encontrado"), 404);
+        }
+
+        Password::sendResetLink($request->all());
+
+        return $this->success(null, __("Email de recuperação enviado"));
+    }
+
+    public function reset(Request $request)
+    {
+
+        $credentials = request()->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => 'required|string|confirmed'
+        ]);
+
+        $reset_password_status = Password::reset($credentials, function ($user, $password) {
+            $user->password = Hash::make($password);
+            $user->save();
+        });
+
+        if ($reset_password_status == Password::INVALID_TOKEN) {
+            return $this->error(__("Token inválido"), 400);
+        }
+
+        return $this->success(null, __("Senha alterada com sucesso"));
+    }
+
+    public function logout(Request $request)
+    {
+        if(Auth::check()) {
+            return $this->error(__("Faça logout antes de realizar essa operação"), 403);
+        }
+
         $cookie = Cookie::forget("jwt");
-        return $this->success([], "Sucesso")->withCookie($cookie);
+        return $this->success([], __("Logout feito com sucesso"))->withCookie($cookie);
     }
 }
