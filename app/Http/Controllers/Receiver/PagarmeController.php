@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Receiver;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\apiResponser;
 use App\Models\Transaction;
 use App\Services\PagarmeRequestService;
 use Illuminate\Http\Request;
 
 class PagarmeController extends Controller
 {
-    use apiResponser;
+
     public function watch(Request $request)
     {
         $ret['success'] = false;
-        $this->log($request->all(), "Recebimento de Postback");
+        ResponseHelper::log($request->all(), "Recebimento de Postback");
         $pagarme = new PagarmeRequestService;
 
         $postbackPayload = $request->all();
@@ -37,7 +37,7 @@ class PagarmeController extends Controller
             $ret['error_message'] = __("Formato inválido");
         }
 
-        return $ret['success'] ? $this->success($transaction, __("Transação alterada com sucesso")) : $this->error($ret['error_message'], 403);
+        return $ret['success'] ? ResponseHelper::success($transaction, __("Transação alterada com sucesso")) : ResponseHelper::error($ret['error_message'], 403);
     }
 
     

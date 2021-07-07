@@ -21,7 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            
+
+            $table->boolean('is_admin');
             $table->decimal('balance');
             $table->string('status', 50);
             $table->string('cpf', 15);

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\apiResponser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,18 +11,17 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    use apiResponser;
 
     public function index(){
         $users = User::paginate(env("ITEMS_PER_PAGE", 10));
 
-        return $this->success($users, __("Retornando Usuários"));
+        return ResponseHelper::success($users, __("Retornando Usuários"));
     }
 
     public function show(User $user){
         return $user 
-            ? $this->success($user, __("Retornando usuário")) 
-            : $this->error(__("Usuário não encontrado"), 404);
+            ? ResponseHelper::success($user, __("Retornando usuário")) 
+            : ResponseHelper::error(__("Usuário não encontrado"), 404);
     }
     
     public function update(Request $request, User $user){
@@ -44,7 +43,7 @@ class UserController extends Controller
         
         extract($data);
         if($validator->fails()){
-            return $this->error(__("Campos inválidos"), 500);
+            return ResponseHelper::error(__("Campos inválidos"), 500);
         }
 
         $user->cpf = !empty($cpf) ? $cpf : $user->cpf;
@@ -55,20 +54,17 @@ class UserController extends Controller
         $user->state = !empty($state) ? $state : $user->state;
         $user->city = !empty($city) ? $city : $user->city;
         
-        Log::info("Editando user [ {$user->id} ]...");
-        Log::info(json_encode($data));
+        ResponseHelper::log($data, "Editando user [{$user->id}]");
         
         $user->save();
 
-        return $this->success($user, __("Usuário editado"));
+        return ResponseHelper::success($user, __("Usuário editado"));
     }
 
     public function toggleActive(User $user){
 
-        // $user = User::find($userId);
-
         if(!$user){
-            return $this->error(__("Usuário não encontrado"), 404);
+            return ResponseHelper::error(__("Usuário não encontrado"), 404);
         }
         $status = !$user->status;
         $user->status = $status;
@@ -76,7 +72,21 @@ class UserController extends Controller
         $user->save();
         $message = $status ? __("Usuário ativado com sucesso") : __("Usuário desativado com sucesso");
 
-        return $this->success($user, $message);
+        return ResponseHelper::success($user, $message);
+    }
+
+    public function toggleAdmin(User $user){
+
+        $new_position = !$user->is_admin;
+        $user->is_admin = $new_position;
+
+        $user->save();
+
+        $message = $new_position 
+        ? __("Usuário é agora um administrador")
+        : __("Usuário não é mais um administrador");
+
+        return ResponseHelper::success($user, $message);
     }
 
 }

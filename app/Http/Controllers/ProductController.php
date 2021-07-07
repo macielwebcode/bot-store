@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
+use App\Helpers\ResponseHelper;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\PagarmeRequestService;
@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -25,8 +24,8 @@ class ProductController extends Controller
             $user = User::with("activeProducts")->find(Auth::user()->id)->toArray();
             $data = $user['activeProducts'];
         } else 
-            $data = Product::all()->jsonSerialize;
-        return $this->success($data, __("Retornando produtos"));
+            $data = Product::all()->jsonSerialize();
+        return ResponseHelper::success($data, __("Retornando produtos"));
     }
 
     public function search(Request $request)
@@ -113,7 +112,7 @@ class ProductController extends Controller
             }
         }
 
-        return $this->success($data, __("Retornando produtos favoritos"));
+        return ResponseHelper::success($data, __("Retornando produtos favoritos"));
     }
 
     public function setFavorite(Product $product)
@@ -121,7 +120,7 @@ class ProductController extends Controller
         if ($user = Auth::user()) {
 
             if (empty($product))
-                return $this->error(__("Produto não encontrado"), Response::HTTP_NOT_FOUND);
+                return ResponseHelper::error(__("Produto não encontrado"), Response::HTTP_NOT_FOUND);
 
             $is_inserted = false;
             $favs = [];
@@ -141,7 +140,7 @@ class ProductController extends Controller
             $message = $is_inserted 
             ? __("Produto {$product->id} removido") 
             : __("Produto {$product->id} adicionado");
-            return $this->success($product, $message);
+            return ResponseHelper::success($product, $message);
         }
     }
 
@@ -152,7 +151,7 @@ class ProductController extends Controller
 
             $plan = $user->subscriptions;
             if (!$plan) {
-                return $this->error(__("Usuário não tem assinatura ativa"), Response::HTTP_BAD_REQUEST);
+                return ResponseHelper::error(__("Usuário não tem assinatura ativa"), Response::HTTP_BAD_REQUEST);
             }
             $favs = User::find($user->id)->activeProducts;
 
@@ -161,7 +160,7 @@ class ProductController extends Controller
             }
         }
 
-        return $this->success($data);
+        return ResponseHelper::success($data);
     }
 
     public function setActive(Product $product)
@@ -175,12 +174,12 @@ class ProductController extends Controller
         $subscription = $user->subscriptions()->where("status", PagarmeRequestService::STATUS_PAID)->first();
 
         if (!$subscription) {
-            return $this->error(__("Usuário não tem assinatura ativa"), Response::HTTP_BAD_REQUEST);
+            return ResponseHelper::error(__("Usuário não tem assinatura ativa"), Response::HTTP_BAD_REQUEST);
         }
         $subscription->toArray();
 
         if (empty($product))
-            return $this->error(__("Produto não encontrado"), Response::HTTP_NOT_FOUND);
+            return ResponseHelper::error(__("Produto não encontrado"), Response::HTTP_NOT_FOUND);
 
         $is_inserted = false;
         $actives = [];
@@ -196,7 +195,7 @@ class ProductController extends Controller
 
         // Validação de negócio
         if (count($actives) > $subscription->plan->max_bots) {
-            return $this->error("Número máximo de robôs atingido. " . ($subscription->plan->max_bots == 0 ? "" : "Desative outro robô primeiro."), Response::HTTP_UNAUTHORIZED);
+            return ResponseHelper::error("Número máximo de robôs atingido. " . ($subscription->plan->max_bots == 0 ? "" : "Desative outro robô primeiro."), Response::HTTP_UNAUTHORIZED);
         }
 
         $user->activeProducts()->sync($actives);
@@ -206,7 +205,7 @@ class ProductController extends Controller
         ? __("Produto {$product->id} desativado com sucesso") 
         : __("Produto {$product->id} ativado com sucesso");
 
-        return $this->success($product, $message);
+        return ResponseHelper::success($product, $message);
         
     }
 }

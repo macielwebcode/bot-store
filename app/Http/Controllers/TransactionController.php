@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
+use App\Helpers\ResponseHelper;
+
 use App\Http\Traits\appSettings;
 use App\Models\Transaction;
 use App\Models\User;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    use apiResponser, appSettings;
+    use appSettings;
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +30,7 @@ class TransactionController extends Controller
             $data[] = $t->toJson();
         }
 
-        return $this->success($data);
+        return ResponseHelper::success($data);
     }
 
     /**

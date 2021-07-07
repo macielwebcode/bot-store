@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
+use App\Helpers\ResponseHelper;
+
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
-    use apiResponser;
+
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +24,7 @@ class NotificationController extends Controller
 
         $data = $user['notifications'];
 
-        return $this->success($data, __("Retornando notificações do cliente"));
+        return ResponseHelper::success($data, __("Retornando notificações do cliente"));
         
     }
 
@@ -33,7 +34,7 @@ class NotificationController extends Controller
 
         $notifications = $user->notifications()->where("is_read", false)->get();
 
-        return $this->success($notifications, __("Retornando notificações do cliente"));
+        return ResponseHelper::success($notifications, __("Retornando notificações do cliente"));
     }
 
     public function setRead(Request $request, Notification $notification)
@@ -41,7 +42,7 @@ class NotificationController extends Controller
         $notification->is_read = true;
         $notification->save();
 
-        return $this->success($notification, __("Marcando notificação como lida"));
+        return ResponseHelper::success($notification, __("Marcando notificação como lida"));
     }
 
     /**

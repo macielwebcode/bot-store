@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\apiResponser;
 use App\Models\Plan;
 use App\Services\PagarmeRequestService;
 use Exception;
@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PlanController extends Controller
 {
-    use apiResponser;
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -36,7 +35,7 @@ class PlanController extends Controller
         ]);
 
         if($validator->fails()) {
-            return $this->error("Campo(s) inválidos", 500);
+            return ResponseHelper::error("Campo(s) inválidos", 500);
         } else {
             DB::beginTransaction();
 
@@ -64,7 +63,7 @@ class PlanController extends Controller
                     2, 
                     0
                 );
-                Log::info("Plano criado: [ " . json_encode($plan_request) . " ]");
+                ResponseHelper::log($plan_request, "Plano criado");
 
                 $plan->external_id = $plan_request->id;
                 $plan->save();
@@ -73,18 +72,18 @@ class PlanController extends Controller
                 DB::rollBack();
                 // $erro = collect($plan_request->errors)->pluck("messsage");
                 $erro = "Não foi possível gerar plano";
-                return $this->error($erro, 500);
+                return ResponseHelper::error($erro, 500);
             }
 
             DB::commit();
-            return $this->success($plan);
+            return ResponseHelper::success($plan);
         }
     }
 
     public function show(Plan $plan){
         return $plan 
-        ? $this->success($plan, __("Retornando plano")) 
-        : $this->error(__("Plano não encontrado"), 404);
+        ? ResponseHelper::success($plan, __("Retornando plano")) 
+        : ResponseHelper::error(__("Plano não encontrado"), 404);
     }
 
     
@@ -108,7 +107,7 @@ class PlanController extends Controller
         extract($data);
         
         if($validator->fails()){
-            return $this->error(__("Campos inválidos"), 500);
+            return ResponseHelper::error(__("Campos inválidos"), 500);
         }
         
         $plan->title = !empty($title) ? $title : $plan->title;
@@ -118,14 +117,12 @@ class PlanController extends Controller
         $plan->max_usage = !empty($max_usage) ? $max_usage : $plan->max_usage;
         $plan->max_bots = !empty($max_bots) ? $max_bots : $plan->max_bots;
         $plan->balance_saving = !empty($balance_saving) ? $balance_saving : $plan->balance_saving;
-        
-        
-        Log::info("Editando plano [ {$plan->id} ]...");
-        Log::info(json_encode($data));
+
+        ResponseHelper::log($data, "Editando plano [ {$plan->id} ]");
         
         $plan->save();
         
-        return $this->success($plan, __("Plano editado"));
+        return ResponseHelper::success($plan, __("Plano editado"));
     }
 
     public function toggleActive(Plan $plan){

@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\NotificationController;
@@ -30,7 +31,10 @@ Route::prefix("auth")->group(function() {
     Route::post("reset", [AuthController::class, "reset"]);
 });
 
-Route::prefix("admin")->group(function() {
+// Recebimento de POSTBACK's
+Route::post("pb_pagarme", [PagarmeController::class, 'watch']);
+
+Route::middleware(['auth:sanctum', 'admin_auth'])->prefix("admin")->group(function() {
     Route::resource("plans", \App\Http\Controllers\Admin\PlanController::class, [
         'except' => ['create', 'destroy', 'edit']
     ]);
@@ -41,6 +45,7 @@ Route::prefix("admin")->group(function() {
     // Support routes for handle the user behavior
     Route::prefix("users")->group(function() {
         Route::post("toggleActive/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleActive"]);
+        Route::post("toggleAdmin/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleAdmin"]);
     });
 
 
@@ -51,8 +56,6 @@ Route::prefix("admin")->group(function() {
 });
 
 
-// Recebimento de POSTBACK's
-Route::post("pb_pagarme", [PagarmeController::class, 'watch']);
 
 // Pagarme Control access
 // Route::prefix("pagarme")->group(function() {
@@ -106,3 +109,8 @@ Route::get('/products', [ProductController::class,'index']);
 
 // Plan
 Route::get('/plans', [PlanController::class,'index']);
+
+
+Route::any('{url}', function(){
+    return ResponseHelper::error(__('Página não encontrada'), 404, []);
+})->where("url", '.*');

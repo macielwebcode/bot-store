@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use PagarMe\PagarMe\Client;
 
-class PagarmeRequestService extends BaseRequestService
+class PagarMeRequestService extends BaseRequestService
 {
     protected $gateway;
     protected $postback_url;
@@ -15,6 +15,9 @@ class PagarmeRequestService extends BaseRequestService
     private $billing;
     private $shipping;
     private $items;
+
+    const STATUS_PAID = 'paid';
+    const STATUS_UNPAID = 'unpaid';
 
     public function __construct()
     {
@@ -74,6 +77,10 @@ class PagarmeRequestService extends BaseRequestService
             'address' => $this->address
         ];
         return $this;
+    }
+
+    public function validatePostback($payload, $signature){
+        return $this->gateway->postbacks()->validate($payload, $signature);
     }
 
     public function addItem($id, $title, $unit_price, $quantity, $tangible = true)
@@ -188,6 +195,13 @@ class PagarmeRequestService extends BaseRequestService
         ];
 
         return $this->gateway->subscriptions()->create($data);
+    }
+
+    public function cancelSubscription($subscription) {
+        $data = [
+            "id" => $subscription->pagarme_id
+        ];
+        return $this->gateway->subscriptions()->cancel($data);
     }
 
     public function createPlan($amount, $days, $name, $payment_methods = null, $trial_days = null)

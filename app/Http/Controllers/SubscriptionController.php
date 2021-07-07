@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Handlers\BalanceHandler;
-use App\Http\Traits\apiResponser;
+
 use App\Models\Plan;
 use App\Models\User;
 use App\Mail\SubscriptionCreated;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SubscriptionController extends Controller
 {
     
-    use apiResponser, BalanceHandler;
+    use BalanceHandler;
     /**
      * Display a listing of the resource.
      *
@@ -30,7 +31,7 @@ class SubscriptionController extends Controller
         $user = User::with("subscriptions")->find(Auth::user()->id);
         $subscriptions = $user->subscriptions->toArray();
 
-        return $this->success($subscriptions, __("Retornando assinatura"));
+        return ResponseHelper::success($subscriptions, __("Retornando assinatura"));
     }
     /**
      * Display a search of the resource.
@@ -54,10 +55,10 @@ class SubscriptionController extends Controller
         $message = "";
         $validated = $request->validate([
             'plan_id'           => 'required|integer',
-            "holder_name"       => 'required_without:card_id',
-            "number"            => 'required_without:card_id',
-            "expiration_date"   => 'required_without:card_id',
-            "cvv"               => 'required_without:card_id',
+            "holder_name"       => 'required_without:card_id|string',
+            "number"            => 'required_without:card_id|integer',
+            "expiration_date"   => 'required_without:card_id|date',
+            "cvv"               => 'required_without:card_id|integer',
         ]);
 
 
@@ -75,11 +76,11 @@ class SubscriptionController extends Controller
             $user = User::find($user_id);
 
             if(!empty($user->subscriptions()->count())){
-                return $this->error("Cliente já possui assinatura ativa", 403);
+                return ResponseHelper::error("Cliente já possui assinatura ativa", 403);
             }
 
             if(empty($plan->external_id)) {
-                return $this->error("Plano inválido. Verifique com o administrador", 500);
+                return ResponseHelper::error("Plano inválido. Verifique com o administrador", 500);
             }
 
             // Persist data 
@@ -100,14 +101,14 @@ class SubscriptionController extends Controller
 
                 if(isset($customer->errors)) {
                     $erro = collect($customer->errors)->pluck("messsage");
-                    return $this->error($erro, 500);
+                    return ResponseHelper::error($erro, 500);
                 }
 
                 if(empty($card_id)) {
                     $card = $pagarme->createCreditCard($customer->id, $number, $pagarme->dataToPagarme($expiration_date), $holder_name, $cvv);
                     if(isset($card->errors)){
                         $erro = collect($card->errors)->pluck("message");
-                        return $this->error($erro, 500);
+                        return ResponseHelper::error($erro, 500);
                     }
                     // create credit card
                     $user->usercards()->create([
@@ -134,7 +135,7 @@ class SubscriptionController extends Controller
 
                 if(isset($subscription->errors)) {
                     $erro = collect($subscription->errors)->pluck("messsage");
-                    return $this->error($erro, 500);
+                    return ResponseHelper::error($erro, 500);
                 }
 
                 DB::beginTransaction();
@@ -184,7 +185,7 @@ class SubscriptionController extends Controller
 
                 Mail::to($user->email)->send(new SubscriptionCreated($sended_mail));
 
-                return $this->success($subscription);
+                return ResponseHelper::success($subscription);
 
             } catch(Exception $e) {
                 $message = $e->getMessage();
@@ -192,7 +193,7 @@ class SubscriptionController extends Controller
             DB::rollBack();
         }
 
-        return $this->error($message, Response::HTTP_INTERNAL_SERVER_ERROR);
+        return ResponseHelper::error($message, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**

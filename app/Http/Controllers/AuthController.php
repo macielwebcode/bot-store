@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
+use App\Helpers\ResponseHelper;
 use App\Models\User;
 use App\Services\PagarmeRequestService;
 use Illuminate\Http\Request;
@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-    use apiResponser;
 
     public function register(Request $request)
     {
@@ -34,7 +33,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error($validator->getMessageBag()->first(), 500);
+            return ResponseHelper::error($validator->getMessageBag()->first(), 500);
         } else {
 
             // Waits success for commit
@@ -67,7 +66,7 @@ class AuthController extends Controller
 
             if (isset($result_customer->errors)) {
                 DB::rollBack();
-                return $this->error(__("Falha ao resgistrar usuário"), 500);
+                return ResponseHelper::error(__("Falha ao resgistrar usuário"), 500);
             }
 
             $user->pagarme_id = $result_customer->id;
@@ -75,7 +74,7 @@ class AuthController extends Controller
 
             DB::commit();
 
-            return $this->success($user, __("Retornando usuário"));
+            return ResponseHelper::success($user, __("Retornando usuário"));
         }
     }
 
@@ -83,7 +82,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only(['email', 'password']))) {
-            return $this->error(__("Credenciais inválidas"), Response::HTTP_UNAUTHORIZED);
+            return ResponseHelper::error(__("Credenciais inválidas"), Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
@@ -91,18 +90,18 @@ class AuthController extends Controller
         $token = $user->createToken('token')->plainTextToken;
         $cookie = cookie("jwt", $token, 60 * 24); //1 dia
 
-        return $this->success($user, __('Sucesso'))->withCookie($cookie);
+        return ResponseHelper::success($user, __('Sucesso'))->withCookie($cookie);
     }
 
     public function user()
     {
-        return $this->success(Auth::user(), __("Retornando usuário"));
+        return ResponseHelper::success(Auth::user(), __("Retornando usuário"));
     }
 
     public function forgot(Request $request)
     {
         if(Auth::user()) {
-            return $this->error(__("Faça logout antes de realizar essa operação"), 403);
+            return ResponseHelper::error(__("Faça logout antes de realizar essa operação"), 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -110,19 +109,19 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error(__("Campos inválidos"), 500);
+            return ResponseHelper::error(__("Campos inválidos"), 500);
         }
 
         $email = $request->input("email");
 
         $user = User::where("email", $email)->first();
         if (!$user) {
-            return $this->error(__("Usuário não encontrado"), 404);
+            return ResponseHelper::error(__("Usuário não encontrado"), 404);
         }
 
         Password::sendResetLink($request->all());
 
-        return $this->success(null, __("Email de recuperação enviado"));
+        return ResponseHelper::success(null, __("Email de recuperação enviado"));
     }
 
     public function reset(Request $request)
@@ -140,19 +139,19 @@ class AuthController extends Controller
         });
 
         if ($reset_password_status == Password::INVALID_TOKEN) {
-            return $this->error(__("Token inválido"), 400);
+            return ResponseHelper::error(__("Token inválido"), 400);
         }
 
-        return $this->success(null, __("Senha alterada com sucesso"));
+        return ResponseHelper::success(null, __("Senha alterada com sucesso"));
     }
 
     public function logout(Request $request)
     {
-        if(Auth::check()) {
-            return $this->error(__("Faça logout antes de realizar essa operação"), 403);
+        if(!Auth::check()) {
+            return ResponseHelper::error(__("Faça logout antes de realizar essa operação"), 403);
         }
 
         $cookie = Cookie::forget("jwt");
-        return $this->success([], __("Logout feito com sucesso"))->withCookie($cookie);
+        return ResponseHelper::success([], __("Logout feito com sucesso"))->withCookie($cookie);
     }
 }

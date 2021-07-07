@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Traits\appSettings;
 use App\Mail\LowBalanceAlert;
 use App\Models\Product;
@@ -40,10 +41,10 @@ class Kernel extends ConsoleKernel
             $user_bellow_index = User::where("subscriptions.");
 
             foreach($user_bellow_index as $user){
+                $email = new LowBalanceAlert($user);
+                ResponseHelper::log($email->textView, "Sending low balance alert mail to [ ". $user->email . " ]");
 
-                Log::info("Sending low balance alert mail to [ ". $user->email . " ]");
-
-                Mail::to($user->email)->send(new LowBalanceAlert($user));
+                Mail::to($user->email)->send($email);
 
             }
 

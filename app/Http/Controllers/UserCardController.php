@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
 use App\Models\User;
 use App\Models\UserCard;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class UserCardController extends Controller
             $data[] = $c->toJson();
         }
 
-        return $this->success($data);
+        return ResponseHelper::success($data);
     }
 
     /**
