@@ -34,28 +34,6 @@ Route::prefix("auth")->group(function() {
 // Recebimento de POSTBACK's
 Route::post("pb_pagarme", [PagarmeController::class, 'watch']);
 
-Route::middleware(['auth:sanctum', 'admin_auth'])->prefix("admin")->group(function() {
-    Route::resource("plans", \App\Http\Controllers\Admin\PlanController::class, [
-        'except' => ['create', 'destroy', 'edit']
-    ]);
-    
-    Route::resource("users", \App\Http\Controllers\Admin\UserController::class, [
-        'except' => [ 'create', 'store', 'destroy', 'edit']
-    ]);
-    // Support routes for handle the user behavior
-    Route::prefix("users")->group(function() {
-        Route::post("toggleActive/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleActive"]);
-        Route::post("toggleAdmin/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleAdmin"]);
-    });
-
-
-    Route::prefix("subscriptions")->group(function() {
-        Route::post("cancel/{subscription}", [\App\Http\Controllers\Admin\SubscriptionController::class, "cancel"]);
-    });
-    Route::resource("subscriptions", \App\Http\Controllers\Admin\SubscriptionController::class);
-});
-
-
 
 // Pagarme Control access
 // Route::prefix("pagarme")->group(function() {
@@ -66,6 +44,7 @@ Route::middleware(['auth:sanctum', 'admin_auth'])->prefix("admin")->group(functi
 
 // Auth is mandatory
 Route::middleware('auth:sanctum')->group(function () {
+
     Route::get('user', [AuthController::class, "user"]);
     Route::post('logout', [AuthController::class, "logout"]);
 
@@ -97,6 +76,34 @@ Route::middleware('auth:sanctum')->group(function () {
         'except' => ['create', 'destroy', 'store']
     ]);
 
+    /**
+     *          ROTAS
+     * 
+     *          ADMIN
+     */
+
+    Route::middleware('admin_auth')->prefix("admin")->group(function() {
+        Route::resource("plans", \App\Http\Controllers\Admin\PlanController::class, [
+            'except' => ['create', 'destroy', 'edit']
+        ]);
+        
+        Route::resource("users", \App\Http\Controllers\Admin\UserController::class, [
+            'except' => [ 'create', 'store', 'destroy', 'edit']
+        ]);
+        // Support routes for handle the user behavior
+        Route::prefix("users")->group(function() {
+            Route::post("toggleActive/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleActive"]);
+            Route::post("toggleAdmin/{user}", [\App\Http\Controllers\Admin\UserController::class, "toggleAdmin"]);
+        });
+    
+    
+        Route::prefix("subscriptions")->group(function() {
+            Route::post("cancel/{subscription}", [\App\Http\Controllers\Admin\SubscriptionController::class, "cancel"]);
+        });
+        Route::resource("subscriptions", \App\Http\Controllers\Admin\SubscriptionController::class);
+    });
+    
+
 });
 
 
@@ -114,3 +121,12 @@ Route::get('/plans', [PlanController::class,'index']);
 Route::any('{url}', function(){
     return ResponseHelper::error(__('Página não encontrada'), 404, []);
 })->where("url", '.*');
+
+Route::get('/', function(){
+    return ResponseHelper::success(
+        [ 
+            'app_name' => env("APP_NAME")
+        ], 
+        __('Bem vindo (a)')
+    );
+});
