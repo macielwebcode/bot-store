@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
                 'phone' => '18998109428',
                 'balance' => 0,
                 'status' => 1,
+                'is_admin' => 1,
 
                 'cep' => '19062270',
                 'street' => 'Rua Jose Junior',
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
                 'phone' => '18998109428',
                 'balance' => 0,
                 'status' => 1,
+                'is_admin' => 0,
 
                 'cep' => '19780000',
                 'street' => 'Rua Maria Antonia',

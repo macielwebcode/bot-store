@@ -17,14 +17,12 @@ class SubscriptionSeeder extends Seeder
     {
         DB::table('subscriptions')->insert([
             [
-                'amount'     => 499.00,
                 'status'     => 'paid',
                 'user_id'    => 3054,
                 'plan_id'    => 1,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
-                'amount'     => 899.00,
                 'status'     => 'paid',
                 'user_id'    => 3013,
                 'plan_id'    => 3,

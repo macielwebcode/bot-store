@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            $table->boolean('is_admin');
+            $table->boolean('is_admin')->default(false);
             $table->decimal('balance');
             $table->string('status', 50);
             $table->string('cpf', 15);
