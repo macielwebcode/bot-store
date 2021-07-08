@@ -101,13 +101,12 @@ class ProductController extends Controller
         //
     }
 
-    public function favorites()
-    {
+    public function favorites(){
         $favs = $data = [];
-        if ($user = Auth::user()) {
+        if($user = Auth::user()){
             $favs = User::find($user->id)->favoriteProducts;
 
-            foreach ($favs as $fav) {
+            foreach($favs as $fav) {
                 $data[] = $fav->toArray();
             }
         }
@@ -131,7 +130,7 @@ class ProductController extends Controller
                     $is_inserted = true;
             }
 
-            if (!$is_inserted)
+            if(!$is_inserted)
                 $favs[] = $product->id;
 
             $user->favoriteProducts()->sync($favs);

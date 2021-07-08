@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Extract;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ExtractController extends Controller
 {
@@ -14,7 +16,19 @@ class ExtractController extends Controller
      */
     public function index()
     {
-        //
+        $user = User::find(Auth::user()->id);
+        $extracts = $user->extracts->toArray();
+
+        return $this->success($extracts);
+    }
+    /**
+     * Display a search of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        // if($request->get(""))
     }
 
     /**
