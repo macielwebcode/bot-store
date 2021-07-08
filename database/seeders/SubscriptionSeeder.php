@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class InvoiceSeeder extends Seeder
+class SubscriptionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class InvoiceSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('invoices')->insert([
+        DB::table('subscriptions')->insert([
             [
                 'amount'     => 499.00,
                 'status'     => 'paid',

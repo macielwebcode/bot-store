@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Invoice;
+use App\Models\Extract;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class InvoiceFactory extends Factory
+class ExtractFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Invoice::class;
+    protected $model = Extract::class;
 
     /**
      * Define the model's default state.

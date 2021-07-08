@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\apiResponser;
-use App\Models\Invoice;
+use App\Helpers\ResponseHelper;
 use App\Models\User;
+use App\Models\UserCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class InvoiceController extends Controller
+class UserCardController extends Controller
 {
-    
-    use apiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -19,19 +17,17 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $user = User::find(Auth::user()->id);
-        $invoices = $user->invoices->toArray();
+        $user_id = Auth::user()->id;
+        $user = User::find($user_id);
 
-        return $this->success($invoices);
-    }
-    /**
-     * Display a search of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function search(Request $request)
-    {
-        // if($request->get(""))
+        $cards = $user->cards();
+
+        $data = [];
+        foreach($cards as $c){
+            $data[] = $c->toJson();
+        }
+
+        return ResponseHelper::success($data);
     }
 
     /**
@@ -41,8 +37,7 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $invoice = new Invoice();
-        return response($invoice->jsonSerialize(), Response::HTTP_CREATED);
+        //
     }
 
     /**
@@ -59,10 +54,10 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\UserCard  $userCard
      * @return \Illuminate\Http\Response
      */
-    public function show(Invoice $invoice)
+    public function show(UserCard $userCard)
     {
         //
     }
@@ -70,10 +65,10 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\UserCard  $userCard
      * @return \Illuminate\Http\Response
      */
-    public function edit(Invoice $invoice)
+    public function edit(UserCard $userCard)
     {
         //
     }
@@ -82,10 +77,10 @@ class InvoiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\UserCard  $userCard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, UserCard $userCard)
     {
         //
     }
@@ -93,10 +88,10 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Invoice  $invoice
+     * @param  \App\Models\UserCard  $userCard
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(UserCard $userCard)
     {
         //
     }
